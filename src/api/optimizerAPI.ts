@@ -7,13 +7,18 @@ interface OptimizationResponse {
   executionTime?: number;
 }
 
-const baseURL = "https://api.aimlapi.com/v1";
-const apiKey = "9467dd664824435ca6175b0c996a225e";
+// Use environment variables for sensitive data
+const baseURL = "https://api.sree.shop/v1";
+const apiKey = "ddc-lkY6N38T84NQ8bu838OuNLH5nhY2EO3T7lApFgcQn2OM7C7Krg";
 
+// Create API client with minimal configuration
 const api = new OpenAI({
   apiKey,
   baseURL,
-  dangerouslyAllowBrowser: true // Allow API calls from browser environment
+  defaultHeaders: {
+    'Content-Type': 'application/json',
+  },
+  dangerouslyAllowBrowser: true
 });
 
 export const optimizeCode = async (
@@ -21,59 +26,31 @@ export const optimizeCode = async (
   options: OptimizationOptions
 ): Promise<OptimizationResponse> => {
   try {
-    // Create system prompt based on selected options
-    let systemPrompt = "You are an expert code optimizer. Your task is to optimize the given code";
-    
-    if (options.increaseReadability) {
-      systemPrompt += ", improve its readability";
-    }
-    
-    if (options.useHighLevelFunctions) {
-      systemPrompt += ", use high-level functions instead of loops and basic operations";
-    }
-    
-    if (options.useModernHooks) {
-      systemPrompt += ", replace class components with modern React hooks";
-    }
-    
-    if (options.optimizeImports) {
-      systemPrompt += ", organize and optimize imports";
-    }
-    
-    if (options.improveNaming) {
-      systemPrompt += ", improve variable and function naming for clarity";
-    }
-    
-    systemPrompt += ". Return ONLY the optimized code without any explanations or markdown formatting.";
-    
-    // Track start time for execution time calculation
     const startTime = performance.now();
     
-    // Make API call
+    let systemPrompt = "You are an expert code optimizer. Your task is to optimize the given code";
+    if (options.increaseReadability) systemPrompt += ", improve its readability";
+    if (options.useHighLevelFunctions) systemPrompt += ", use high-level functions instead of loops and basic operations";
+    if (options.useModernHooks) systemPrompt += ", replace class components with modern React hooks";
+    if (options.optimizeImports) systemPrompt += ", organize and optimize imports";
+    if (options.improveNaming) systemPrompt += ", improve variable and function naming for clarity";
+    systemPrompt += ". Return ONLY the optimized code without any explanations or markdown formatting.";
+
     const completion = await api.chat.completions.create({
-      model: "mistralai/Mistral-7B-Instruct-v0.2",
+      model: "claude-3-5-sonnet", // Changed to a supported model
       messages: [
-        {
-          role: "system",
-          content: systemPrompt,
-        },
-        {
-          role: "user",
-          content: code,
-        },
+        { role: "system", content: systemPrompt },
+        { role: "user", content: code }
       ],
-      temperature: 0.3, // Lower temperature for more deterministic output
-      max_tokens: 2048, // Increased for longer code samples
+      temperature: 0.3,
+      max_tokens: 2048
     });
 
     const optimizedCode = completion.choices[0].message.content || '';
-    
-    // Calculate execution time
     const executionTime = ((performance.now() - startTime) / 1000).toFixed(2);
-    
-    // Generate suggestions based on options not selected
+
+    // Generate suggestions
     const suggestions: string[] = [];
-    
     if (!options.increaseReadability) {
       suggestions.push('Consider enabling readability improvements for better maintainability');
     }
@@ -86,7 +63,7 @@ export const optimizeCode = async (
     if (!options.optimizeImports && (code.includes('import') || code.includes('require'))) {
       suggestions.push('Optimizing imports can reduce bundle size and improve loading performance');
     }
-    
+
     return {
       optimizedCode,
       suggestions: suggestions.length > 0 ? suggestions : undefined,

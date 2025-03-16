@@ -8,5 +8,18 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src')
     }
+  },
+  server: {
+    proxy: {
+      '/v1': {
+        target: 'https://api.sree.shop',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/v1/, '/v1'),
+        headers: {
+          'Origin': 'https://api.sree.shop'
+        }
+      }
+    }
   }
 })

@@ -1,6 +1,6 @@
 import React from "react";
 import { Highlight } from "prism-react-renderer";
-import { themes } from "prism-react-renderer"; // Import themes object
+import { themes } from "prism-react-renderer";
 
 interface CodeEditorProps {
   code: string;
@@ -21,13 +21,19 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ code, onChange, language = "jav
       <Highlight code={code} language={language} theme={themes.dracula}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <pre className={className} style={style}>
-            {tokens.map((line, i) => (
-              <div key={i} {...getLineProps({ line, key: i })}>
-                {line.map((token, key) => (
-                  <span key={key} {...getTokenProps({ token })} />
-                ))}
-              </div>
-            ))}
+            {tokens.map((line, i) => {
+              // Destructure key from line props
+              const { key, ...lineProps } = getLineProps({ line, key: i });
+              return (
+                <div key={i} {...lineProps}>
+                  {line.map((token, key) => {
+                    // Destructure key from token props
+                    const { key: tokenKey, ...tokenProps } = getTokenProps({ token, key });
+                    return <span key={key} {...tokenProps} />;
+                  })}
+                </div>
+              );
+            })}
           </pre>
         )}
       </Highlight>
