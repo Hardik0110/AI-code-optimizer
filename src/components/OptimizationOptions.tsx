@@ -21,69 +21,31 @@ const OptimizationOptions: React.FC<OptimizationOptionsProps> = ({ options, onCh
     });
   };
 
+  const optionItems = [
+    { key: 'increaseReadability', label: 'Increase Readability' },
+    { key: 'useHighLevelFunctions', label: 'Use High-Level Functions' },
+    { key: 'useModernHooks', label: 'Use Modern React Hooks' },
+    { key: 'optimizeImports', label: 'Optimize Imports' },
+    { key: 'improveNaming', label: 'Improve Variable Naming' }
+  ];
+
   return (
     <div className="optimization-options">
       <h3 className="options-title">Optimization Options</h3>
       <div className="options-grid">
-        <div className="option-item">
-          <label className="option-label">
-            <input
-              type="checkbox"
-              checked={options.increaseReadability}
-              onChange={() => handleOptionChange('increaseReadability')}
-            />
-            <span className="checkbox-custom"></span>
-            <span className="option-text">Increase Readability</span>
-          </label>
-        </div>
-        
-        <div className="option-item">
-          <label className="option-label">
-            <input
-              type="checkbox"
-              checked={options.useHighLevelFunctions}
-              onChange={() => handleOptionChange('useHighLevelFunctions')}
-            />
-            <span className="checkbox-custom"></span>
-            <span className="option-text">Use High-Level Functions</span>
-          </label>
-        </div>
-        
-        <div className="option-item">
-          <label className="option-label">
-            <input
-              type="checkbox"
-              checked={options.useModernHooks}
-              onChange={() => handleOptionChange('useModernHooks')}
-            />
-            <span className="checkbox-custom"></span>
-            <span className="option-text">Use Modern React Hooks</span>
-          </label>
-        </div>
-        
-        <div className="option-item">
-          <label className="option-label">
-            <input
-              type="checkbox"
-              checked={options.optimizeImports}
-              onChange={() => handleOptionChange('optimizeImports')}
-            />
-            <span className="checkbox-custom"></span>
-            <span className="option-text">Optimize Imports</span>
-          </label>
-        </div>
-        
-        <div className="option-item">
-          <label className="option-label">
-            <input
-              type="checkbox"
-              checked={options.improveNaming}
-              onChange={() => handleOptionChange('improveNaming')}
-            />
-            <span className="checkbox-custom"></span>
-            <span className="option-text">Improve Variable Naming</span>
-          </label>
-        </div>
+        {optionItems.map(({ key, label }) => (
+          <div key={key} className="option-item">
+            <label className="option-label">
+              <input
+                type="checkbox"
+                checked={options[key as keyof OptionType]}
+                onChange={() => handleOptionChange(key as keyof OptionType)}
+              />
+              <span className="checkbox-custom"></span>
+              <span className="option-text">{label}</span>
+            </label>
+          </div>
+        ))}
       </div>
     </div>
   );

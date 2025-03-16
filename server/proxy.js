@@ -15,12 +15,16 @@ app.post('/v1/optimize', async (req, res) => {
   try {
     const { code, options } = req.body;
     
-    let systemPrompt = "You are an expert code optimizer. Your task is to optimize the given code";
-    if (options.increaseReadability) systemPrompt += ", improve its readability";
-    if (options.useHighLevelFunctions) systemPrompt += ", use high-level functions instead of loops";
-    if (options.useModernHooks) systemPrompt += ", replace class components with modern React hooks";
-    if (options.optimizeImports) systemPrompt += ", organize and optimize imports";
-    if (options.improveNaming) systemPrompt += ", improve variable and function naming";
+    const optimizationFeatures = [
+      "optimize the given code",
+      options.increaseReadability ? "improve its readability" : "",
+      options.useHighLevelFunctions ? "use high-level functions instead of loops" : "",
+      options.useModernHooks ? "replace class components with modern React hooks" : "",
+      options.optimizeImports ? "organize and optimize imports" : "",
+      options.improveNaming ? "improve variable and function naming" : ""
+    ].filter(Boolean).join(", ");
+    
+    const systemPrompt = `You are an expert code optimizer. Your task is to ${optimizationFeatures}.`;
     
     const completion = await openai.chat.completions.create({
       model: "claude-3-5-sonnet",

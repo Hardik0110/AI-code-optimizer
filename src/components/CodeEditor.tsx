@@ -9,31 +9,31 @@ interface CodeEditorProps {
   placeholder?: string;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ code, onChange, language = "javascript" }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ 
+  code, 
+  onChange, 
+  language = "javascript",
+  placeholder = "Write your code here..." 
+}) => {
   return (
     <div className="code-editor">
       <textarea
         className="code-input"
         value={code}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Write your code here..."
+        placeholder={placeholder}
       />
-      <Highlight code={code} language={language} theme={themes.dracula}>
+      <Highlight code={code || " "} language={language} theme={themes.dracula}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
-          <pre className={className} style={style}>
-            {tokens.map((line, i) => {
-              // Destructure key from line props
-              const { key, ...lineProps } = getLineProps({ line, key: i });
-              return (
-                <div key={i} {...lineProps}>
-                  {line.map((token, key) => {
-                    // Destructure key from token props
-                    const { key: tokenKey, ...tokenProps } = getTokenProps({ token, key });
-                    return <span key={key} {...tokenProps} />;
-                  })}
-                </div>
-              );
-            })}
+          <pre className={className} style={{ ...style, margin: 0, padding: '16px' }}>
+            {tokens.map((line, i) => (
+              <div key={i} {...getLineProps({ line, key: i })}>
+                <span className="line-number">{i + 1}</span>
+                {line.map((token, key) => (
+                  <span key={key} {...getTokenProps({ token, key })} />
+                ))}
+              </div>
+            ))}
           </pre>
         )}
       </Highlight>

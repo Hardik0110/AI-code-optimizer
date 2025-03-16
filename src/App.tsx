@@ -23,8 +23,10 @@ const App: React.FC = () => {
 
   const handleOptimize = async () => {
     if (!inputCode.trim()) return;
+    
     setIsLoading(true);
     setError(null);
+    
     try {
       const result = await optimizeCode(inputCode, options);
       setOutputCode(result.optimizedCode);

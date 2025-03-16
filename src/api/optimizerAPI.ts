@@ -1,5 +1,4 @@
 import { OptimizationOptions } from '../types';
-import { OpenAI } from 'openai';
 
 interface OptimizationResponse {
   optimizedCode: string;
@@ -7,17 +6,8 @@ interface OptimizationResponse {
   executionTime?: number;
 }
 
-const baseURL = "http://localhost:3001";  // Changed baseURL
+const baseURL = "http://localhost:3001";
 const apiKey = "ddc-lkY6N38T84NQ8bu838OuNLH5nhY2EO3T7lApFgcQn2OM7C7Krg";
-
-const api = new OpenAI({
-  apiKey,
-  baseURL,
-  defaultHeaders: {
-    'Content-Type': 'application/json',
-  },
-  dangerouslyAllowBrowser: true
-});
 
 export const optimizeCode = async (
   code: string, 
@@ -26,29 +16,26 @@ export const optimizeCode = async (
   try {
     const startTime = performance.now();
     
-    const completion = await fetch(`${baseURL}/v1/optimize`, {
+    const response = await fetch(`${baseURL}/v1/optimize`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
       },
-      body: JSON.stringify({
-        code,
-        options
-      })
+      body: JSON.stringify({ code, options })
     });
 
-    if (!completion.ok) {
-      throw new Error(`API error: ${completion.statusText}`);
+    if (!response.ok) {
+      throw new Error(`API error: ${response.statusText}`);
     }
 
-    const result = await completion.json();
-    const executionTime = ((performance.now() - startTime) / 1000).toFixed(2);
+    const result = await response.json();
+    const executionTime = parseFloat(((performance.now() - startTime) / 1000).toFixed(2));
 
     return {
       optimizedCode: result.optimizedCode,
-      suggestions: result.suggestions,
-      executionTime: parseFloat(executionTime)
+      suggestions: result.suggestions || [],
+      executionTime
     };
   } catch (error) {
     console.error('API error:', error);
