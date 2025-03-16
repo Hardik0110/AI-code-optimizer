@@ -1,7 +1,7 @@
 import React from 'react';
-// ...existing code...
-import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
-// ...existing code...
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import '../styles/OutputSection.css';
 
 interface OutputSectionProps {
   code: string;
@@ -32,8 +32,8 @@ const OutputSection: React.FC<OutputSectionProps> = ({
     <div className="output-container">
       {isLoading ? (
         <div className="loading-container">
-          <div className="chakra-loading"></div>
-          <p>Optimizing your code using AI...</p>
+          <div className="spinner"></div>
+          <p>Optimizing your code...</p>
         </div>
       ) : error ? (
         <div className="error-container">
@@ -43,39 +43,43 @@ const OutputSection: React.FC<OutputSectionProps> = ({
       ) : code ? (
         <>
           <div className="output-toolbar">
-            <div className="execution-time">
-              {executionTime !== undefined && (
-                <span>Processed in {executionTime}s</span>
-              )}
-            </div>
-            <button className="copy-button" onClick={copyToClipboard}>
+            {executionTime && (
+              <span className="execution-time">Processed in {executionTime}s</span>
+            )}
+            <button onClick={copyToClipboard} className="copy-button">
               Copy Code
             </button>
           </div>
-          <div className="output-code">
+          <div className="code-container custom-scrollbar">
             <SyntaxHighlighter
               language="typescript"
-              wrapLines={true}
+              style={vscDarkPlus}
               showLineNumbers={true}
+              customStyle={{
+                margin: 0,
+                borderRadius: '4px',
+                padding: '1em',
+                maxHeight: '500px',
+                overflow: 'auto'
+              }}
             >
               {code}
             </SyntaxHighlighter>
           </div>
           {suggestions && suggestions.length > 0 && (
-            <div className="suggestions-container">
-              <h4 className="suggestions-title">Suggestions</h4>
-              <ul className="suggestions-list">
+            <div className="suggestions">
+              <h4>Suggestions:</h4>
+              <ul>
                 {suggestions.map((suggestion, index) => (
-                  <li key={index} className="suggestion-item">{suggestion}</li>
+                  <li key={index}>{suggestion}</li>
                 ))}
               </ul>
             </div>
           )}
         </>
       ) : (
-        <div className="empty-output">
+        <div className="empty-state">
           <p>Optimized code will appear here</p>
-          <div className="mandala-placeholder"></div>
         </div>
       )}
     </div>
